@@ -41,14 +41,18 @@ subagent:
        task says to)
     3. Verify implementation works
     4. Commit your work with jj using a Conventional Commits message,
-       e.g. `jj commit -m "feat: add recovery modes"` — never raw git
+       e.g. `jj commit -m "feat: add recovery modes"` — never raw git —
+       unless the enclosing workflow owns commits, in which case follow
+       its rules and leave the working copy clean of unrelated changes
     5. Self-review (see below)
     6. Report back
 
     Work from: [directory]
 
-    **While you work:** If you encounter something unexpected or unclear, **ask questions**.
-    It's always OK to pause and clarify. Don't guess or make assumptions.
+    **While you work:** If you encounter something unexpected or unclear, stop and
+    **return NEEDS_CONTEXT with the specific question** — you cannot converse mid-run;
+    the controller answers by re-dispatching you with the answer added to the prompt.
+    Don't guess or make assumptions.
 
     While iterating, run the focused test for what you're changing; run the
     full suite once before committing, not after every edit.

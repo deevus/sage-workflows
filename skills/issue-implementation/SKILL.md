@@ -64,7 +64,7 @@ MUST delegate implementation of the agreed slice to worker subagents in the isol
   - the human explicitly approves collapsing the plan into one worker.
 - Never treat a worker's self-review, acceptance contract, or final report as the required Task N review.
 - If a pre-existing baseline failure must be fixed, treat it as Task 0 and review it before feature implementation.
-- After Task N is approved, MUST commit that task before dispatching Task N+1. Use a Conventional Commit message and keep each task commit scoped to the approved task.
+- After Task N is approved, MUST ensure that task is committed before dispatching Task N+1. Use a Conventional Commit message and keep each task commit scoped to the approved task.
 - The orchestrator MUST NOT edit production code directly in the primary session unless the human explicitly says to skip delegation and implement directly.
 
 # PR

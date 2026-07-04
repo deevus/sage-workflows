@@ -74,7 +74,8 @@ activation surface first.
 
 The pack uses the standard `skills/<name>/SKILL.md` layout; supporting files
 (tests.md, mocking.md, deep-modules.md, interface-design.md, refactoring.md,
-implementer-prompt.md, task-reviewer-prompt.md) ride inside their skill
+implementer-prompt.md, task-reviewer-prompt.md,
+plan-document-reviewer-prompt.md) ride inside their skill
 folders and travel with the skill under any standard installer.
 Sage-specific frontmatter keys (`phases:` and its `gate`/`skip_when`/`skill`
 entries) are inert extra YAML for other consumers — a non-Sage agent reads

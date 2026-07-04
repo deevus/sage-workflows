@@ -80,7 +80,7 @@ Rules:
 
 See [tests.md](tests.md) for what good tests look like, and [mocking.md](mocking.md) for when mocking is appropriate (mock only at system boundaries — never your own modules or internal collaborators).
 
-Run the test suite and confirm the new test fails for the expected reason. Only then report the transition to green. Use the project's own test command (Zig: `zig build test`; silent exit 0 means pass, so a failing test must produce visible failure output).
+Run the test suite and confirm the new test fails for the expected reason. Only then report the transition to green. Use the project's own test command (some, like `zig build test`, exit silently on success — a failing test must produce visible failure output).
 
 # Green
 

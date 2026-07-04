@@ -67,6 +67,8 @@ Dispatch every worker with the `subagent` tool. Its fields:
 
 The `subagent` tool is blocking and defaults to a read-only tool policy; implementer and reviewer children need an explicit `child.tools` policy that permits editing. Since dispatch is blocking, subagents run one at a time — which is what you want; parallel implementers conflict.
 
+**Async vs. blocking dispatch:** "async dispatch" (as issue-implementation mandates) means fire-with-a-complete-prompt and non-interactive execution — the worker cannot converse with you mid-run. When the available `subagent` tool is blocking, the same discipline applies: compose a complete initial prompt and do no mid-run steering. Questions from a worker arrive only as a NEEDS_CONTEXT return; answer them by re-dispatching with the answer added to the prompt.
+
 ## Pre-Flight Plan Review
 
 Before dispatching Task 1, scan the plan once for conflicts:
@@ -171,12 +173,11 @@ Task 1: Hook installation script
 
 [Record BASE; write task-1 brief file; dispatch implementer with brief + report paths + context]
 
-Implementer: "Before I begin - should the hook be installed at user or system level?"
+Implementer: Status: NEEDS_CONTEXT — should the hook be installed at user or system level?
 
-You: "User level (~/.config/hooks/)"
+[Re-dispatch with the answer added to the prompt: "Install at user level (~/.config/hooks/)"]
 
-Implementer: "Got it. Implementing now..."
-[Later] Implementer:
+Implementer:
   - Implemented install-hook command
   - Added tests, 5/5 passing
   - Self-review: Found I missed --force flag, added it
@@ -227,7 +228,7 @@ Done — report completion to the enclosing workflow.
 **vs. Manual execution:**
 - Subagents follow TDD naturally
 - Fresh context per task (no confusion)
-- Subagent can ask questions (before AND during work)
+- Subagent can ask questions — they arrive as NEEDS_CONTEXT returns (answered by re-dispatch), not mid-run conversation
 
 **Efficiency gains:**
 - Controller curates exactly what context is needed; bulk artifacts move as files, not pasted text
