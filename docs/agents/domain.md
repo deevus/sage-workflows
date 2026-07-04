@@ -18,10 +18,14 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 ```text
 /
 ├── CONTEXT.md
-├── docs/adr/
-│   ├── 0001-example-decision.md
-│   └── 0002-example-follow-up.md
-└── edit/, rg/, lua/
+├── README.md
+├── FINDINGS.md
+├── docs/
+│   ├── adr/
+│   │   ├── 0001-example-decision.md
+│   │   └── 0002-example-follow-up.md
+│   └── agents/
+└── skills/<name>/SKILL.md
 ```
 
 ## Use the glossary's vocabulary

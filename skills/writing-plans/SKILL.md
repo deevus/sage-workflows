@@ -15,7 +15,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Context:** If working in an isolated workspace, create it before execution (e.g. `jj workspace add`).
 
-**Save plans to:** a temporary folder outside the repository (the orchestrator supplies the path).
+**Save plans to:** a temporary folder outside the repository (the orchestrator supplies the path; if there is no orchestrator, pick a temporary folder yourself and announce the path).
 - (User preferences for plan location override this default)
 
 ## Scope Check
@@ -105,7 +105,7 @@ def test_specific_behavior():
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: FAIL with "function not defined"
 
-Use the project's own test command (for Zig projects: `zig build test`, which exits silently on success).
+Use the project's own test command (some, like `zig build test`, exit silently on success — a failing test must produce visible failure output).
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -155,6 +155,10 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
+
+## Optional: Independent Plan Review
+
+After self-review, you may dispatch an independent plan reviewer subagent using the prompt in [plan-document-reviewer-prompt.md](plan-document-reviewer-prompt.md) — this is optional and does not replace the self-review above.
 
 ## Execution Handoff
 
