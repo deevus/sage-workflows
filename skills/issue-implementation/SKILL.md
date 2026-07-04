@@ -45,7 +45,7 @@ Dispatch discipline for this and every subagent in this process:
 
 MUST create an implementation plan in a temporary folder, following the writing-plans skill (mentioned by name so any reader can find it — it carries the how: task decomposition, file structure, testing strategy).
 
-MUST create/use an isolated workspace (worktree) by default. Do not ask before using one unless the human explicitly asks not to.
+MUST create/use an isolated workspace (worktree) by default. Do not ask before using one unless the human explicitly asks not to. Use the VCS the project already uses — never assume one. If a VCS-specific skill is available (e.g. a jujutsu skill for jj repositories), read it before running VCS commands.
 
 # Implement
 
@@ -64,7 +64,7 @@ MUST delegate implementation of the agreed slice to worker subagents in the isol
   - the human explicitly approves collapsing the plan into one worker.
 - Never treat a worker's self-review, acceptance contract, or final report as the required Task N review.
 - If a pre-existing baseline failure must be fixed, treat it as Task 0 and review it before feature implementation.
-- After Task N is approved, MUST ensure that task is committed before dispatching Task N+1. Use a Conventional Commit message and keep each task commit scoped to the approved task.
+- After Task N is approved, MUST ensure that task is committed before dispatching Task N+1. Follow the project's commit-message convention if one is evident from instructions or the VCS history (default to Conventional Commits otherwise) and keep each task commit scoped to the approved task.
 - The orchestrator MUST NOT edit production code directly in the primary session unless the human explicitly says to skip delegation and implement directly.
 
 # PR

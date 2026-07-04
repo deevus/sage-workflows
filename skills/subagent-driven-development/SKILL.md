@@ -32,26 +32,26 @@ Work through these questions in order:
 
 **Setup (once):**
 
-1. Ensure you are in an isolated workspace, not working directly on the main bookmark (create one first if needed, e.g. `jj workspace add`).
+1. Use the VCS the project already uses — never assume one. If a VCS-specific skill is available (e.g. a jujutsu skill for jj repositories), read it before running VCS commands. Ensure you are in an isolated workspace, not working directly on the main branch/bookmark (create one first if needed with the project's VCS — git: `git worktree add`; jj: `jj workspace add`).
 2. Read the plan file once. Note its context section and global constraints.
-3. Record the branch base — the change the branch's work sits ON TOP OF (the parent of the first branch change, not the working-copy change itself) — you need it for the final whole-branch diff.
+3. Record the branch base — the revision the branch's work sits ON TOP OF (the parent of the branch's first commit, not the working copy itself) — you need it for the final whole-branch diff. After the branch is done, the BRANCH_BASE..tip diff must include every branch commit; a suspiciously small or empty diff means the base was recorded wrong.
 4. Initialize the progress ledger file in the working folder the orchestrator supplies (e.g. alongside the plan file): one line per task, none marked complete. Run the Pre-Flight Plan Review (below) before dispatching Task 1.
 
 **Per task:**
 
-1. Record BASE as the change the task's work will sit on top of: the working-copy parent, from `jj --no-pager log -r @-` (if the working copy already contains task work, record its parent, not @).
+1. Record BASE as the revision the task's work will sit on top of — the revision BELOW the task's first commit. After the task, the BASE..tip diff must include every task commit; a suspiciously small or empty diff means BASE was recorded wrong. (git: `git rev-parse HEAD` before dispatch; jj: the working-copy parent, `jj --no-pager log -r @-`, because `jj commit` keeps the working copy's change ID on the completed commit — if the working copy already contains task work, record its parent, not @.)
 2. Write the task-brief file: copy that task's full section from the plan — heading and everything under it, nothing else — into its own file (e.g. `<workdir>/task-N-brief.md`).
 3. Dispatch an implementer subagent using [implementer-prompt.md](implementer-prompt.md).
 4. If the implementer asks questions, answer them completely — with more context if needed — before letting it proceed.
-5. The implementer implements, tests, commits with jj (Conventional Commits messages), self-reviews, and reports one of four statuses. Handle the status per "Handling Implementer Status" below.
-6. On DONE: write the review diff file with `jj diff --git --context 10 --from BASE --to @`, redirected to a uniquely named file, and dispatch a task reviewer subagent using [task-reviewer-prompt.md](task-reviewer-prompt.md).
+5. The implementer implements, tests, commits with the project's VCS (using the project's commit-message convention if one is evident from instructions or the VCS history; default to Conventional Commits otherwise), self-reviews, and reports one of four statuses. Handle the status per "Handling Implementer Status" below.
+6. On DONE: write the review diff file — a unified diff from BASE to the current tip with ~10 lines of context (git: `git diff -U10 BASE..HEAD`; jj: `jj diff --git --context 10 --from BASE --to @`) — redirected to a uniquely named file, and dispatch a task reviewer subagent using [task-reviewer-prompt.md](task-reviewer-prompt.md).
 7. If the reviewer reports Critical or Important findings (or a spec ❌), dispatch a fix subagent with the findings, regenerate the diff file, and re-review. Repeat until spec ✅ and quality approved. Record Minor findings in the progress ledger.
 8. Mark the task complete in the progress ledger.
 9. More tasks remain? Return to step 1 for the next task.
 
 **After all tasks:**
 
-1. Dispatch a final whole-branch reviewer on the most capable available model. Hand it one diff file covering the whole branch (`jj diff --git --context 10 --from BRANCH_BASE --to @`, plus the commit list from `jj --no-pager log`), the plan's requirements and global constraints, and the ledger's accumulated Minor-findings list so it can triage which must be fixed before merge. Ask for the same Critical/Important/Minor severity categories and an overall verdict.
+1. Dispatch a final whole-branch reviewer on the most capable available model. Hand it one diff file covering the whole branch (a unified diff from BRANCH_BASE to the tip with ~10 lines of context — git: `git diff -U10 BRANCH_BASE..HEAD`; jj: `jj diff --git --context 10 --from BRANCH_BASE --to @` — plus the commit list: git: `git log --oneline BRANCH_BASE..HEAD`; jj: `jj --no-pager log -r 'BRANCH_BASE..@'`), the plan's requirements and global constraints, and the ledger's accumulated Minor-findings list so it can triage which must be fixed before merge. Ask for the same Critical/Important/Minor severity categories and an overall verdict.
 2. If the final review returns findings, dispatch ONE fix subagent with the complete findings list — not one fixer per finding — then re-review.
 3. Report completion to the enclosing workflow (or your human partner): tasks done, commits created, review outcomes, open Minor items.
 
@@ -103,7 +103,7 @@ Use the least powerful model that can handle each role to conserve cost and incr
 
 Implementer subagents report one of four statuses. Handle each appropriately:
 
-**DONE:** Write the review diff file — `jj diff --git --context 10 --from BASE --to @` redirected to a uniquely named file (BASE is the change ID you recorded before dispatching the implementer — never assume the task produced a single commit; deriving the diff from only the last commit silently drops all but the last commit of a multi-commit task). Then dispatch the task reviewer with that file path.
+**DONE:** Write the review diff file — a unified diff from BASE to the current tip with ~10 lines of context (git: `git diff -U10 BASE..HEAD`; jj: `jj diff --git --context 10 --from BASE --to @`) redirected to a uniquely named file (BASE is the revision you recorded before dispatching the implementer — never assume the task produced a single commit; deriving the diff from only the last commit silently drops all but the last commit of a multi-commit task). Then dispatch the task reviewer with that file path.
 
 **DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
 
@@ -129,7 +129,7 @@ Per-task reviews are task-scoped gates. The broad review happens once, at the fi
 - Do not ask a reviewer to re-run tests the implementer already ran on the same code — the implementer's report carries the test evidence
 - Do not pre-judge findings for the reviewer — never instruct a reviewer to ignore or not flag a specific issue. If you believe a finding would be a false positive, let the reviewer raise it and adjudicate it in the review loop. If the prompt you are writing contains "do not flag," "don't treat X as a defect," "at most Minor," or "the plan chose" — stop: you are pre-judging, usually to spare yourself a review loop.
 - The global-constraints block you hand the reviewer is its attention lens. Copy the binding requirements verbatim from the plan's Global Constraints section or the spec: exact values, exact formats, and the stated relationships between components ("same layout as X", "matches Y"). The reviewer's template already carries the process rules (YAGNI, test hygiene, review method) — the constraints block is for what THIS project's spec demands.
-- Hand the reviewer its diff as a file: hand each reviewer a diff file produced with `jj diff --git` plus the task-brief. Build the file by redirecting the commit list (`jj --no-pager log -r 'BASE..@'`), a stat summary (`jj diff --stat --from BASE --to @`), and the full diff (`jj diff --git --context 10 --from BASE --to @`) into one uniquely named file per review (a re-review after fixes gets a fresh, distinctly named file). The output never enters your own context, and the reviewer sees the commit list, stat summary, and full diff in one Read call. Use the BASE you recorded before dispatching the implementer — never just the parent of the latest change, which silently truncates multi-commit tasks.
+- Hand the reviewer its diff as a file: hand each reviewer a unified diff file produced with the project's VCS plus the task-brief. Build the file by redirecting the commit list in BASE..tip (git: `git log --oneline BASE..HEAD`; jj: `jj --no-pager log -r 'BASE..@'`), a stat summary (git: `git diff --stat BASE..HEAD`; jj: `jj diff --stat --from BASE --to @`), and the full diff with ~10 lines of context (git: `git diff -U10 BASE..HEAD`; jj: `jj diff --git --context 10 --from BASE --to @`) into one uniquely named file per review (a re-review after fixes gets a fresh, distinctly named file). The output never enters your own context, and the reviewer sees the commit list, stat summary, and full diff in one Read call. Use the BASE you recorded before dispatching the implementer — never just the parent of the latest change, which silently truncates multi-commit tasks.
 - A dispatch prompt describes one task, not the session's history. Do not paste accumulated prior-task summaries ("state after Tasks 1-3") into later dispatches — a real session's dispatch hit 42k chars of which 99% was pasted history. A fresh subagent needs its task, the interfaces it touches, and the global constraints. Nothing else.
 - Dispatch fix subagents for Critical and Important findings. Record Minor findings in the progress ledger as you go, and point the final whole-branch review at that list so it can triage which must be fixed before merge. A roll-up nobody reads is a silent discard.
 - A finding labeled plan-mandated — or any finding that conflicts with what the plan's text requires — is the human's decision, like any plan contradiction: present the finding and the plan text, ask which governs. Do not dismiss the finding because the plan mandates it, and do not dispatch a fix that contradicts the plan without asking.
@@ -153,7 +153,7 @@ Conversation memory does not survive compaction. In real sessions, controllers t
 - The ledger lives in the working folder the orchestrator supplies (e.g. alongside the plan file): `<workdir>/progress.md`.
 - At skill start, check for an existing ledger. Tasks listed there as complete are DONE — do not re-dispatch them; resume at the first task not marked complete.
 - When a task's review comes back clean, append one line to the ledger in the same message as your other bookkeeping: `Task N: complete (changes <base>..<head>, review clean)`.
-- The ledger is your recovery map: the changes it names exist in the repo even when your context no longer remembers creating them. After compaction, trust the ledger and `jj --no-pager log` over your own recollection.
+- The ledger is your recovery map: the changes it names exist in the repo even when your context no longer remembers creating them. After compaction, trust the ledger and the VCS log (git: `git log --oneline`; jj: `jj --no-pager log`) over your own recollection.
 
 ## Prompt Templates
 
@@ -181,7 +181,7 @@ Implementer:
   - Implemented install-hook command
   - Added tests, 5/5 passing
   - Self-review: Found I missed --force flag, added it
-  - Committed (jj, Conventional Commits)
+  - Committed (project convention)
 
 [Write diff file from BASE..@; dispatch task reviewer with its path]
 Task reviewer: Spec ✅ - all requirements met, nothing extra.
@@ -251,7 +251,7 @@ Done — report completion to the enclosing workflow.
 ## Red Flags
 
 **Never:**
-- Start implementation on the main bookmark without explicit user consent — create an isolated workspace first, e.g. `jj workspace add`
+- Start implementation on the main branch/bookmark without explicit user consent — create an isolated workspace first with the project's VCS (git: `git worktree add`; jj: `jj workspace add`)
 - Skip task review, or accept a report missing either verdict (spec compliance AND task quality are both required)
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
@@ -262,9 +262,9 @@ Done — report completion to the enclosing workflow.
 - Skip review loops (reviewer found issues = implementer fixes = review again)
 - Let implementer self-review replace actual review (both are needed)
 - Tell a reviewer what not to flag, or pre-rate a finding's severity in the dispatch prompt ("treat it as Minor at most") — the plan's example code is a starting point, not evidence that its weaknesses were chosen
-- Dispatch a task reviewer without a diff file — write it first with `jj diff --git --context 10 --from BASE --to @` and name the path in the prompt
+- Dispatch a task reviewer without a diff file — write it first (git: `git diff -U10 BASE..HEAD`; jj: `jj diff --git --context 10 --from BASE --to @`) and name the path in the prompt
 - Move to next task while the review has open Critical/Important issues
-- Re-dispatch a task the progress ledger already marks complete — check the ledger (and `jj --no-pager log`) after any compaction or resume
+- Re-dispatch a task the progress ledger already marks complete — check the ledger (and the VCS log) after any compaction or resume
 - Skip a human gate or per-task commit required by the enclosing workflow
 
 **If subagent asks questions:**
@@ -289,6 +289,6 @@ Done — report completion to the enclosing workflow.
 - **tdd** - Subagents follow test-driven development for each task
 - **issue-implementation** - The enclosing workflow this skill typically runs inside; its human gates and per-task commit rules govern pacing
 
-**Before starting:** work in an isolated workspace, not directly on the main bookmark (e.g. `jj workspace add`).
+**Before starting:** work in an isolated workspace, not directly on the main branch/bookmark — create one with the project's VCS (git: `git worktree add`; jj: `jj workspace add`).
 
 **After the final review passes:** report completion to the enclosing workflow or your human partner; integration (merge, PR, cleanup) is their call.
