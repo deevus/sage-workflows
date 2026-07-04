@@ -19,7 +19,6 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 /
 ├── CONTEXT.md
 ├── README.md
-├── FINDINGS.md
 ├── docs/
 │   ├── adr/
 │   │   ├── 0001-example-decision.md
