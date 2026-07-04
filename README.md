@@ -65,3 +65,17 @@ executes plans produced by `writing-plans` and typically runs inside
 `issue-implementation`, whose human gates and per-task commit rules govern
 pacing. Referenced by `issue-implementation`'s implement phase. Invoke in
 Sage with `/skill:subagent-driven-development`.
+
+## Acknowledgements
+
+Several skills in this pack are adaptations of existing work:
+
+- `writing-plans` and `subagent-driven-development` are adapted from
+  [obra/superpowers](https://github.com/obra/superpowers) by Jesse Vincent.
+- `tdd` is adapted from
+  [mattpocock/skills](https://github.com/mattpocock/skills) by Matt Pocock.
+
+The adaptations make them VCS-agnostic, phrase subagent dispatch against
+Sage's blocking `subagent` tool, and defer pacing to enclosing human-gated
+workflows. `issue-implementation` derives from the Sage project's required
+issue workflow.
