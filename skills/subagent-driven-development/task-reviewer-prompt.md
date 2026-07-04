@@ -45,9 +45,13 @@ subagent:
     change. The diff's context lines ARE the changed files: do not Read a
     changed file separately unless a hunk you must judge is cut off
     mid-function — and say so in your report. Do not re-run VCS commands.
-    If the diff file is missing, fetch the diff yourself:
-    `jj diff --stat --from [BASE_CHANGE] --to [HEAD_CHANGE]` and
-    `jj diff --git --context 10 --from [BASE_CHANGE] --to [HEAD_CHANGE]`.
+    If the diff file is missing, fetch the diff yourself with the project's
+    VCS: a stat summary and a unified diff from [BASE_CHANGE] to
+    [HEAD_CHANGE] with ~10 lines of context
+    (git: `git diff --stat [BASE_CHANGE]..[HEAD_CHANGE]` and
+    `git diff -U10 [BASE_CHANGE]..[HEAD_CHANGE]`;
+    jj: `jj diff --stat --from [BASE_CHANGE] --to [HEAD_CHANGE]` and
+    `jj diff --git --context 10 --from [BASE_CHANGE] --to [HEAD_CHANGE]`).
     Do not crawl the broader codebase. Inspect code outside the diff only
     to evaluate a concrete risk you can name — one focused check per named
     risk, and name both the risk and what you checked in your report.
@@ -185,8 +189,9 @@ subagent:
 - `[BASE_CHANGE]` — the change/commit recorded before this task was dispatched
 - `[HEAD_CHANGE]` — the current change/commit
 - `[DIFF_FILE]` — REQUIRED: the uniquely named file the controller wrote the
-  commit list, stat summary, and `jj diff --git --context 10 --from BASE --to @`
-  output to; the diff never enters the controller's context
+  commit list, stat summary, and full unified diff (~10 lines of context;
+  git: `git diff -U10 BASE..HEAD`; jj: `jj diff --git --context 10 --from
+  BASE --to @`) output to; the diff never enters the controller's context
 
 **Reviewer returns:** Spec Compliance verdict (✅/❌/⚠️), Strengths, Issues
 (Critical/Important/Minor), Task quality verdict

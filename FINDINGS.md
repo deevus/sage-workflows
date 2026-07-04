@@ -33,7 +33,8 @@ so it was folded into prose as "the first cycle" of the ordinary loop.
 **4. No subagent capability constraints in frontmatter.** The scout must be
 read-only, but there is no schema key to declare a subagent capability
 constraint; the restriction lives in prose only ("dispatch a
-pre-implementation scout subagent (read-only)").
+pre-implementation scout subagent (read-only)"). The repo owner has
+confirmed read-only is the intended constraint.
 
 **5. Repeating micro-workflow inside a phase.** The implement phase's serial
 per-task loop (worker → review → fix → re-review → commit, once per task) is
@@ -57,6 +58,20 @@ obligation distinct from a human gate.
 immediately, report it, and ask the human" is a workflow-wide invariant, not
 a review-phase rule, yet it lives in the `# Review` section because v1 has
 no schema slot for guards that hold across all phases.
+
+**9. Gate semantics inside subagents are undefined.** Gates are a
+session-level primitive — they pause the loop and prompt the human — but
+phased skills are exactly what a worker subagent may be told to follow
+(e.g. implementation workers following `tdd` inside `issue-implementation`'s
+implement phase). A non-interactive subagent has no gate surface, so
+`refactor: { gate: human }` is unreachable when tdd guides a worker rather
+than the main session. This is also why tdd did not gain a
+`planning: { gate: human }` phase despite gap 2: the owner ruled that adding
+gates to a skill likely to run in subagent contexts bakes in a primitive
+that may not exist there. Candidate resolutions for the PRD: gates degrade
+to an escalation return (NEEDS_CONTEXT-style) in child contexts; gates
+auto-waive in child contexts; or phased skills declare whether they are
+session-level.
 
 ## `triggers:` verdict
 

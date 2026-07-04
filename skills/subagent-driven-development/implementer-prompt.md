@@ -40,10 +40,13 @@ subagent:
     2. Write tests (following the tdd skill's red-green-refactor loop if the
        task says to)
     3. Verify implementation works
-    4. Commit your work with jj using a Conventional Commits message,
-       e.g. `jj commit -m "feat: add recovery modes"` — never raw git —
-       unless the enclosing workflow owns commits, in which case follow
-       its rules and leave the working copy clean of unrelated changes
+    4. Commit your work with the project's VCS, using the project's
+       commit-message convention if one is evident from instructions or the
+       VCS history — default to Conventional Commits otherwise (git:
+       `git commit -am "feat: add recovery modes"`; jj:
+       `jj commit -m "feat: add recovery modes"`) — follow the enclosing
+       workflow's commit rules: if it owns commits, leave the working copy
+       clean of unrelated changes and let it commit
     5. Self-review (see below)
     6. Report back
 
@@ -135,7 +138,7 @@ subagent:
     Then report back with ONLY (under 15 lines — the detail lives in the
     report file):
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-    - Commits created (change ID + commit message subject)
+    - Commits created (commit/change ID + commit message subject)
     - One-line test summary (e.g. "14/14 passing, output pristine")
     - Your concerns, if any
     - The report file path

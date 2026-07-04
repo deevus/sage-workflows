@@ -13,7 +13,7 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-**Context:** If working in an isolated workspace, create it before execution (e.g. `jj workspace add`).
+**Context:** Use the VCS the project already uses — never assume one. If a VCS-specific skill is available (e.g. a jujutsu skill for jj repositories), read it before running VCS commands. If working in an isolated workspace, create it with the project's VCS before execution (git: `git worktree add`; jj: `jj workspace add`).
 
 **Save plans to:** a temporary folder outside the repository (the orchestrator supplies the path; if there is no orchestrator, pick a temporary folder yourself and announce the path).
 - (User preferences for plan location override this default)
@@ -121,9 +121,7 @@ Expected: PASS
 
 - [ ] **Step 5: Commit**
 
-```bash
-jj commit -m "feat: add specific feature"
-```
+Commit using the project's VCS, following the project's commit-message convention if one is evident from instructions or the VCS history — default to Conventional Commits otherwise (git: `git commit -am "feat: add specific feature"`; jj: `jj commit -m "feat: add specific feature"`).
 
 Note: the orchestrator may own commits — follow the active workflow's rules.
 ````

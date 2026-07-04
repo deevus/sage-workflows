@@ -132,6 +132,6 @@ Before signing off a cycle, verify:
 
 ## Committing
 
-If this repository uses jj, commit each completed cycle as a coherent unit using Conventional Commits (e.g. `feat: ...`, `fix: ...`, `test: ...`). Note that an enclosing workflow may own commits — if so, leave the working copy clean of unrelated changes and let it commit.
+Use the VCS the project already uses — never assume one. If a VCS-specific skill is available (e.g. a jujutsu skill for jj repositories), read it before running VCS commands. Commit each completed cycle as a coherent unit, following the project's commit-message convention if one is evident from instructions or the VCS history; default to Conventional Commits otherwise (e.g. `feat: ...`, `fix: ...`, `test: ...`). Note that an enclosing workflow may own commits — if so, leave the working copy clean of unrelated changes and let it commit.
 
 This workflow is one cycle. For the next behavior, transition backward to red with a reason naming the next test. The human gate on leaving refactor is the cycle's sign-off.
