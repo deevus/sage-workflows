@@ -59,11 +59,11 @@ MUST delegate implementation of the agreed slice to worker subagents in the isol
   4. If N is 1, create a draft pull request immediately after the Task 1 implementation commit and BEFORE Task 1 review.
   5. Push the Task N implementation commit to the draft pull request branch.
   6. Dispatch at least one async reviewer for Task N.
-  7. If the Task N review finds blocking issues, ask the human whether they have any additional comments or issues before dispatching a fix worker.
-  8. Fix blocking Task N review findings, plus any human additions, with a focused async worker.
+  7. After the Task N review returns, always ask the human whether they have any comments, concerns, or additional issues before dispatching fixes or proceeding. This is a synchronous gate: do not start a fix worker and do not proceed to Task N+1 until the human responds.
+  8. If the Task N review finds blocking issues, or the human adds issues, fix them with a focused async worker.
   9. Commit and push any Task N fix work to the draft pull request branch.
   10. Re-review until Task N is approved or blocked.
-  11. Only then proceed to Task N+1.
+  11. Only after Task N is approved, all Task N implementation and fix commits are pushed, and the human feedback gate has passed, proceed to Task N+1.
 - A single broad implementation worker is forbidden unless:
   - the plan contains exactly one implementation task; or
   - the human explicitly approves collapsing the plan into one worker.
