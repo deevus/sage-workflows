@@ -13,7 +13,7 @@ Execute a plan by dispatching a fresh implementer subagent per task, a task revi
 
 **Narration:** between tool calls, narrate at most one short line — the ledger and the tool results carry the record.
 
-**Pacing:** Pacing is owned by the enclosing workflow. When run inside Sage's issue-implementation workflow, human gates and per-task commits apply; do not skip them. Independent of pacing, these situations are escalation triggers — raise them with your human partner when they occur: a BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete.
+**Pacing:** Pacing is owned by the enclosing workflow. When run inside Sage's issue-implementation workflow, follow the selected HITL/AFK mode there; per-task commits always apply, while human gates may be deferred in AFK mode until final PR-readiness approval. Independent of pacing, these situations are escalation triggers — raise them with your human partner when they occur: a BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete.
 
 ## When to Use
 
@@ -287,7 +287,7 @@ Done — report completion to the enclosing workflow.
 **Related skills in this pack:**
 - **writing-plans** - Creates the plan this skill executes
 - **tdd** - Subagents follow test-driven development for each task
-- **issue-implementation** - The enclosing workflow this skill typically runs inside; its human gates and per-task commit rules govern pacing
+- **issue-implementation** - The enclosing workflow this skill typically runs inside; its HITL/AFK mode and per-task commit rules govern pacing
 
 **Before starting:** work in an isolated workspace, not directly on the main branch/bookmark — create one with the project's VCS (git: `git worktree add`; jj: `jj workspace add`).
 

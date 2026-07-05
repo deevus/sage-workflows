@@ -18,13 +18,16 @@ files read as plain markdown guidance.
 
 ### issue-implementation
 
-Human-in-the-loop implementation of tracked issues. The primary assistant acts
-as an orchestrator — never the direct implementer — coordinating read-only
-scouts, implementer workers, and reviewer subagents from issue intake through
-merge, with the human holding the gates. It is phased:
-intake → grill (human gate, skippable when criteria are clear) → scout →
-plan → implement → pr → review (human gate). The plan phase follows the
-`writing-plans` skill and the implement phase follows the
+Implementation of tracked issues with either HITL or AFK pacing. The primary
+assistant acts as an orchestrator — never the direct implementer — coordinating
+read-only scouts, implementer workers, and reviewer subagents from issue intake
+through merge. Before the task loop, the human chooses HITL mode, which keeps
+per-task feedback gates, or AFK mode, which skips human gates until the final
+approval to move the draft PR to ready-for-review; the mode can be provided as
+an invocation argument such as `/issue-implementation 123 AFK`. It is phased:
+intake → grill (human gate, skippable when criteria are clear) → scout → plan →
+mode (human gate) → implement → pr → review (human gate). The plan
+phase follows the `writing-plans` skill and the implement phase follows the
 `subagent-driven-development` skill — both referenced in its frontmatter.
 Invoke in Sage with `/skill:issue-implementation`, or just ask to grab, take,
 or work on a tracked issue.
@@ -62,7 +65,7 @@ the end. It covers model selection per role, file-based handoffs (task
 briefs, report files, diff files), a durable progress ledger that survives
 compaction, and handling of implementer statuses and reviewer findings. It
 executes plans produced by `writing-plans` and typically runs inside
-`issue-implementation`, whose human gates and per-task commit rules govern
+`issue-implementation`, whose HITL/AFK mode and per-task commit rules govern
 pacing. Referenced by `issue-implementation`'s implement phase. Invoke in
 Sage with `/skill:subagent-driven-development`.
 
