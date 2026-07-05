@@ -54,22 +54,31 @@ MUST delegate implementation of the agreed slice to worker subagents in the isol
 - MUST delegate implementation in task-sized units, not as one broad worker.
 - If the implementation plan has more than one task, the orchestrator MUST run this serial loop:
   1. Dispatch exactly one async worker for Task N.
-  2. Wait for Task N completion.
-  3. Dispatch at least one async reviewer for Task N.
-  4. Fix any blocking Task N review findings with a focused async worker.
-  5. Re-review until Task N is approved or blocked.
-  6. Only then proceed to Task N+1.
+  2. Wait for Task N implementation completion.
+  3. Ensure the Task N implementation is committed on the working branch. Follow the project's commit-message convention if one is evident from instructions or the VCS history (default to Conventional Commits otherwise) and keep each task commit scoped to that task.
+  4. If N is 1, create a draft pull request immediately after the Task 1 implementation commit and BEFORE Task 1 review.
+  5. Push the Task N implementation commit to the draft pull request branch.
+  6. Dispatch at least one async reviewer for Task N.
+  7. If the Task N review finds blocking issues, ask the human whether they have any additional comments or issues before dispatching a fix worker.
+  8. Fix blocking Task N review findings, plus any human additions, with a focused async worker.
+  9. Commit and push any Task N fix work to the draft pull request branch.
+  10. Re-review until Task N is approved or blocked.
+  11. Only then proceed to Task N+1.
 - A single broad implementation worker is forbidden unless:
   - the plan contains exactly one implementation task; or
   - the human explicitly approves collapsing the plan into one worker.
 - Never treat a worker's self-review, acceptance contract, or final report as the required Task N review.
 - If a pre-existing baseline failure must be fixed, treat it as Task 0 and review it before feature implementation.
-- After Task N is approved, MUST ensure that task is committed before dispatching Task N+1. Follow the project's commit-message convention if one is evident from instructions or the VCS history (default to Conventional Commits otherwise) and keep each task commit scoped to the approved task.
+- After Task N is approved, MUST ensure all Task N implementation and fix commits have been pushed to the draft pull request branch before dispatching Task N+1.
 - The orchestrator MUST NOT edit production code directly in the primary session unless the human explicitly says to skip delegation and implement directly.
 
 # PR
 
-MUST create a pull request after implementation BEFORE final code review.
+MUST create a draft pull request after Task 1 implementation is committed and pushed, before Task 1 review. The pull request MUST remain draft while task implementation and agent review/fix loops continue.
+
+MUST push commits to the draft pull request branch after each task implementation commit and after each review-fix commit.
+
+After all tasks are complete, all agent review issues are resolved, and the human approves the result, mark the pull request as ready for review.
 
 Then MUST request post-implementation review from agent subagents covering all of these lenses:
 
@@ -80,7 +89,7 @@ The DRY review MUST look wider than the changed modules: inspect the changed fil
 
 # Review
 
-MUST request human review, and MUST merge only after review approval.
+MUST request human review after all tasks are complete and all agent review issues are resolved. MUST mark the draft pull request ready only after human approval. MUST merge only after review approval.
 
 If any required step is skipped or the orchestrator starts implementing directly by mistake, STOP immediately, report the skipped step, and ask the human how to proceed.
 
